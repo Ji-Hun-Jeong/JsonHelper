@@ -60,142 +60,254 @@ namespace Json
 	}
 	JsonValue& JsonValue::operator=(const std::string& _StringValue)
 	{
-		if (VecJsonValue.empty())
+		if (VecJsonValue.empty() == false)
 		{
-			JsonType = eJsonType::String;
-			JsonValueString = _StringValue;
+			for (size_t i = 0; i < VecJsonValue.size(); ++i)
+				delete VecJsonValue[i];
+			VecJsonValue.clear();
 		}
+		if (MapJsonValue.empty() == false)
+		{
+			for (auto iter = MapJsonValue.begin(); iter != MapJsonValue.end();)
+			{
+				delete iter->second;
+				iter = MapJsonValue.erase(iter);
+			}
+			MapJsonValue.clear();
+		}
+		JsonType = eJsonType::String;
+		JsonValueString = _StringValue;
 		return *this;
 	}
 	JsonValue& JsonValue::operator=(int _IntValue)
 	{
-		if (VecJsonValue.empty())
+		if (VecJsonValue.empty() == false)
 		{
-			JsonType = eJsonType::Int;
-			JsonValueString = std::to_string(_IntValue);
+			for (size_t i = 0; i < VecJsonValue.size(); ++i)
+				delete VecJsonValue[i];
+			VecJsonValue.clear();
 		}
+		if (MapJsonValue.empty() == false)
+		{
+			for (auto iter = MapJsonValue.begin(); iter != MapJsonValue.end();)
+			{
+				delete iter->second;
+				iter = MapJsonValue.erase(iter);
+			}
+			MapJsonValue.clear();
+		}
+		JsonType = eJsonType::Int;
+		JsonValueString = std::to_string(_IntValue);
+
 		return *this;
 	}
 	JsonValue& JsonValue::operator=(double _DoubleValue)
 	{
-		if (VecJsonValue.empty())
+		if (VecJsonValue.empty() == false)
 		{
-			JsonType = eJsonType::Double;
-			JsonValueString = std::to_string(_DoubleValue);
+			for (size_t i = 0; i < VecJsonValue.size(); ++i)
+				delete VecJsonValue[i];
+			VecJsonValue.clear();
 		}
+		if (MapJsonValue.empty() == false)
+		{
+			for (auto iter = MapJsonValue.begin(); iter != MapJsonValue.end();)
+			{
+				delete iter->second;
+				iter = MapJsonValue.erase(iter);
+			}
+			MapJsonValue.clear();
+		}
+		JsonType = eJsonType::Double;
+		JsonValueString = std::to_string(_DoubleValue);
+
 		return *this;
 	}
 	JsonValue& JsonValue::operator=(eBooleanType _BooleanType)
 	{
-		if (VecJsonValue.empty())
+		if (VecJsonValue.empty() == false)
 		{
-			JsonType = eJsonType::Boolean;
-			if (_BooleanType == eBooleanType::False)
-				JsonValueString = "false";
-			else
-				JsonValueString = "true";
+			for (size_t i = 0; i < VecJsonValue.size(); ++i)
+				delete VecJsonValue[i];
+			VecJsonValue.clear();
 		}
+		if (MapJsonValue.empty() == false)
+		{
+			for (auto iter = MapJsonValue.begin(); iter != MapJsonValue.end();)
+			{
+				delete iter->second;
+				iter = MapJsonValue.erase(iter);
+			}
+			MapJsonValue.clear();
+		}
+		JsonType = eJsonType::Boolean;
+		if (_BooleanType == eBooleanType::False)
+			JsonValueString = "false";
+		else
+			JsonValueString = "true";
+
 		return *this;
 	}
 	JsonValue& JsonValue::operator=(eNullType _Null)
 	{
-		if (VecJsonValue.empty())
+		if (VecJsonValue.empty() == false)
 		{
-			JsonType = eJsonType::Null;
-			JsonValueString = "null";
+			for (size_t i = 0; i < VecJsonValue.size(); ++i)
+				delete VecJsonValue[i];
+			VecJsonValue.clear();
 		}
+		if (MapJsonValue.empty() == false)
+		{
+			for (auto iter = MapJsonValue.begin(); iter != MapJsonValue.end();)
+			{
+				delete iter->second;
+				iter = MapJsonValue.erase(iter);
+			}
+			MapJsonValue.clear();
+		}
+		JsonType = eJsonType::Null;
+		JsonValueString = "null";
+
 		return *this;
 	}
 	JsonValue& JsonValue::operator=(const JsonValue& _JsonValue)
 	{
-		if (VecJsonValue.empty())
+		JsonType = _JsonValue.JsonType;
+		JsonValueString = _JsonValue.JsonValueString;
+
+		for (size_t i = 0; i < VecJsonValue.size(); ++i)
 		{
-			JsonType = _JsonValue.JsonType;
-			JsonValueString = _JsonValue.JsonValueString;
-
-			for (size_t i = 0; i < VecJsonValue.size(); ++i)
-			{
-				if (VecJsonValue[i])
-					delete VecJsonValue[i];
-			}
-			VecJsonValue.reserve(_JsonValue.VecJsonValue.size());
-			for (size_t i = 0; i < _JsonValue.VecJsonValue.size(); ++i)
-			{
-				VecJsonValue.push_back(new JsonValue(*_JsonValue.VecJsonValue[i]));
-			}
-
-			for (auto iter = MapJsonValue.begin(); iter != MapJsonValue.end(); ++iter)
-			{
-				if (iter->second)
-					delete iter->second;
-			}
-			MapJsonValue.clear();
-			for (auto iter = _JsonValue.MapJsonValue.begin(); iter != _JsonValue.MapJsonValue.end(); ++iter)
-			{
-				MapJsonValue.insert(std::make_pair(iter->first, new JsonValue(*iter->second)));
-			}
+			if (VecJsonValue[i])
+				delete VecJsonValue[i];
 		}
-		
+		VecJsonValue.clear();
+		VecJsonValue.reserve(_JsonValue.VecJsonValue.size());
+		for (size_t i = 0; i < _JsonValue.VecJsonValue.size(); ++i)
+		{
+			VecJsonValue.push_back(new JsonValue(*_JsonValue.VecJsonValue[i]));
+		}
+
+		for (auto iter = MapJsonValue.begin(); iter != MapJsonValue.end(); ++iter)
+		{
+			if (iter->second)
+				delete iter->second;
+		}
+		MapJsonValue.clear();
+		for (auto iter = _JsonValue.MapJsonValue.begin(); iter != _JsonValue.MapJsonValue.end(); ++iter)
+		{
+			MapJsonValue.insert(std::make_pair(iter->first, new JsonValue(*iter->second)));
+		}
+
 		return *this;
 	}
 	JsonValue& JsonValue::Append(const std::string& _StringValue)
 	{
 		JsonType = eJsonType::Array;
-		if (MapJsonValue.empty())
+		if (MapJsonValue.empty() == false)
 		{
-			JsonValue* jsonValue = new JsonValue;
-			*jsonValue = _StringValue;
-			VecJsonValue.push_back(jsonValue);
+			for (auto iter = MapJsonValue.begin(); iter != MapJsonValue.end(); )
+			{
+				delete iter->second;
+				iter = MapJsonValue.erase(iter);
+			}
 		}
+		if (JsonValueString.empty() == false)
+			JsonValueString.clear();
+		JsonValue* jsonValue = new JsonValue;
+		*jsonValue = _StringValue;
+		VecJsonValue.push_back(jsonValue);
+
 		return *this;
 	}
 	JsonValue& JsonValue::Append(int _IntValue)
 	{
 		JsonType = eJsonType::Array;
-		if (MapJsonValue.empty())
+		if (MapJsonValue.empty() == false)
 		{
-			JsonValue* jsonValue = new JsonValue;
-			*jsonValue = _IntValue;
-			VecJsonValue.push_back(jsonValue);
+			for (auto iter = MapJsonValue.begin(); iter != MapJsonValue.end(); )
+			{
+				delete iter->second;
+				iter = MapJsonValue.erase(iter);
+			}
 		}
+		if (JsonValueString.empty() == false)
+			JsonValueString.clear();
+		JsonValue* jsonValue = new JsonValue;
+		*jsonValue = _IntValue;
+		VecJsonValue.push_back(jsonValue);
+
 		return *this;
 	}
 	JsonValue& JsonValue::Append(double _DoubleValue)
 	{
 		JsonType = eJsonType::Array;
-		if (MapJsonValue.empty())
+		if (MapJsonValue.empty() == false)
 		{
-			JsonValue* jsonValue = new JsonValue;
-			*jsonValue = _DoubleValue;
-			VecJsonValue.push_back(jsonValue);
+			for (auto iter = MapJsonValue.begin(); iter != MapJsonValue.end(); )
+			{
+				delete iter->second;
+				iter = MapJsonValue.erase(iter);
+			}
 		}
+		if (JsonValueString.empty() == false)
+			JsonValueString.clear();
+		JsonValue* jsonValue = new JsonValue;
+		*jsonValue = _DoubleValue;
+		VecJsonValue.push_back(jsonValue);
+
 		return *this;
 	}
 	JsonValue& JsonValue::Append(eBooleanType _BooleanType)
 	{
 		JsonType = eJsonType::Array;
-		if (MapJsonValue.empty())
+		if (MapJsonValue.empty() == false)
 		{
-			JsonValue* jsonValue = new JsonValue;
-			*jsonValue = _BooleanType;
-			VecJsonValue.push_back(jsonValue);
+			for (auto iter = MapJsonValue.begin(); iter != MapJsonValue.end(); )
+			{
+				delete iter->second;
+				iter = MapJsonValue.erase(iter);
+			}
 		}
+		if (JsonValueString.empty() == false)
+			JsonValueString.clear();
+		JsonValue* jsonValue = new JsonValue;
+		*jsonValue = _BooleanType;
+		VecJsonValue.push_back(jsonValue);
+
 		return *this;
 	}
 	JsonValue& JsonValue::Append(eNullType _Null)
 	{
 		JsonType = eJsonType::Array;
-		if (MapJsonValue.empty())
+		if (MapJsonValue.empty() == false)
 		{
-			JsonValue* jsonValue = new JsonValue;
-			*jsonValue = _Null;
-			VecJsonValue.push_back(jsonValue);
+			for (auto iter = MapJsonValue.begin(); iter != MapJsonValue.end(); )
+			{
+				delete iter->second;
+				iter = MapJsonValue.erase(iter);
+			}
 		}
+		if (JsonValueString.empty() == false)
+			JsonValueString.clear();
+		JsonValue* jsonValue = new JsonValue;
+		*jsonValue = _Null;
+		VecJsonValue.push_back(jsonValue);
+
 		return *this;
 	}
 	JsonValue& JsonValue::Append(JsonValue& _JsonValue)
 	{
 		JsonType = eJsonType::Array;
+		if (MapJsonValue.empty() == false)
+		{
+			for (auto iter = MapJsonValue.begin(); iter != MapJsonValue.end(); )
+			{
+				delete iter->second;
+				iter = MapJsonValue.erase(iter);
+			}
+		}
+		if (JsonValueString.empty() == false)
+			JsonValueString.clear();
 		VecJsonValue.push_back(new JsonValue(_JsonValue));
 		return *this;
 	}
