@@ -1,6 +1,3 @@
 Test/
 .vs/
 x64/
-JsonParser/JsonParser.vcxproj.user
-JsonParser/JsonParser.vcxproj.filters
-JsonParser/JsonParser.vcxproj
